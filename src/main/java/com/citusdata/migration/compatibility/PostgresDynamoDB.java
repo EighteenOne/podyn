@@ -14,52 +14,7 @@ import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.ResponseMetadata;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.AttributeValueUpdate;
-import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest;
-import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult;
-import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
-import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
-import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
-import com.amazonaws.services.dynamodbv2.model.DeleteItemRequest;
-import com.amazonaws.services.dynamodbv2.model.DeleteItemResult;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeLimitsRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeTimeToLiveRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeTimeToLiveResult;
-import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
-import com.amazonaws.services.dynamodbv2.model.GetItemResult;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes;
-import com.amazonaws.services.dynamodbv2.model.ListTablesRequest;
-import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
-import com.amazonaws.services.dynamodbv2.model.ListTagsOfResourceRequest;
-import com.amazonaws.services.dynamodbv2.model.ListTagsOfResourceResult;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
-import com.amazonaws.services.dynamodbv2.model.QueryRequest;
-import com.amazonaws.services.dynamodbv2.model.QueryResult;
-import com.amazonaws.services.dynamodbv2.model.ScanRequest;
-import com.amazonaws.services.dynamodbv2.model.ScanResult;
-import com.amazonaws.services.dynamodbv2.model.TagResourceRequest;
-import com.amazonaws.services.dynamodbv2.model.TagResourceResult;
-import com.amazonaws.services.dynamodbv2.model.UntagResourceRequest;
-import com.amazonaws.services.dynamodbv2.model.UntagResourceResult;
-import com.amazonaws.services.dynamodbv2.model.UpdateItemRequest;
-import com.amazonaws.services.dynamodbv2.model.UpdateItemResult;
-import com.amazonaws.services.dynamodbv2.model.UpdateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.UpdateTableResult;
-import com.amazonaws.services.dynamodbv2.model.UpdateTimeToLiveRequest;
-import com.amazonaws.services.dynamodbv2.model.UpdateTimeToLiveResult;
-import com.amazonaws.services.dynamodbv2.model.WriteRequest;
+import com.amazonaws.services.dynamodbv2.model.*;
 import com.amazonaws.services.dynamodbv2.waiters.AmazonDynamoDBWaiters;
 import com.citusdata.migration.datamodel.TableSchema;
 
@@ -88,6 +43,11 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public BatchExecuteStatementResult batchExecuteStatement(BatchExecuteStatementRequest batchExecuteStatementRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public BatchGetItemResult batchGetItem(BatchGetItemRequest batchGetItemRequest) {
 		throw new UnsupportedOperationException();
 	}
@@ -113,6 +73,16 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public CreateBackupResult createBackup(CreateBackupRequest createBackupRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public CreateGlobalTableResult createGlobalTable(CreateGlobalTableRequest createGlobalTableRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public CreateTableResult createTable(CreateTableRequest createTableRequest) {
 	    throw new UnsupportedOperationException();
 	}
@@ -125,9 +95,14 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public DeleteBackupResult deleteBackup(DeleteBackupRequest deleteBackupRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public DeleteItemResult deleteItem(DeleteItemRequest deleteItemRequest) {
 		
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -155,6 +130,46 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public DescribeBackupResult describeBackup(DescribeBackupRequest describeBackupRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeContinuousBackupsResult describeContinuousBackups(DescribeContinuousBackupsRequest describeContinuousBackupsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeContributorInsightsResult describeContributorInsights(DescribeContributorInsightsRequest describeContributorInsightsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeEndpointsResult describeEndpoints(DescribeEndpointsRequest describeEndpointsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeExportResult describeExport(DescribeExportRequest describeExportRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeGlobalTableResult describeGlobalTable(DescribeGlobalTableRequest describeGlobalTableRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeGlobalTableSettingsResult describeGlobalTableSettings(DescribeGlobalTableSettingsRequest describeGlobalTableSettingsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DescribeKinesisStreamingDestinationResult describeKinesisStreamingDestination(DescribeKinesisStreamingDestinationRequest describeKinesisStreamingDestinationRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public DescribeLimitsResult describeLimits(DescribeLimitsRequest describeLimitsRequest) {
 		
 		throw new UnsupportedOperationException();
@@ -173,8 +188,38 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public DescribeTableReplicaAutoScalingResult describeTableReplicaAutoScaling(DescribeTableReplicaAutoScalingRequest describeTableReplicaAutoScalingRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public DescribeTimeToLiveResult describeTimeToLive(DescribeTimeToLiveRequest describeTimeToLiveRequest) {
 		
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public DisableKinesisStreamingDestinationResult disableKinesisStreamingDestination(DisableKinesisStreamingDestinationRequest disableKinesisStreamingDestinationRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public EnableKinesisStreamingDestinationResult enableKinesisStreamingDestination(EnableKinesisStreamingDestinationRequest enableKinesisStreamingDestinationRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ExecuteStatementResult executeStatement(ExecuteStatementRequest executeStatementRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ExecuteTransactionResult executeTransaction(ExecuteTransactionRequest executeTransactionRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ExportTableToPointInTimeResult exportTableToPointInTime(ExportTableToPointInTimeRequest exportTableToPointInTimeRequest) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -193,6 +238,26 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	@Override
 	public GetItemResult getItem(String tableName, Map<String, AttributeValue> key, Boolean consistentRead) {
 		
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListBackupsResult listBackups(ListBackupsRequest listBackupsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListContributorInsightsResult listContributorInsights(ListContributorInsightsRequest listContributorInsightsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListExportsResult listExports(ListExportsRequest listExportsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ListGlobalTablesResult listGlobalTables(ListGlobalTablesRequest listGlobalTablesRequest) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -257,6 +322,16 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public RestoreTableFromBackupResult restoreTableFromBackup(RestoreTableFromBackupRequest restoreTableFromBackupRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public RestoreTableToPointInTimeResult restoreTableToPointInTime(RestoreTableToPointInTimeRequest restoreTableToPointInTimeRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public ScanResult scan(ScanRequest scanRequest) {
 		
 		throw new UnsupportedOperationException();
@@ -287,8 +362,38 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	}
 
 	@Override
+	public TransactGetItemsResult transactGetItems(TransactGetItemsRequest transactGetItemsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public TransactWriteItemsResult transactWriteItems(TransactWriteItemsRequest transactWriteItemsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public UntagResourceResult untagResource(UntagResourceRequest untagResourceRequest) {
 		
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UpdateContinuousBackupsResult updateContinuousBackups(UpdateContinuousBackupsRequest updateContinuousBackupsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UpdateContributorInsightsResult updateContributorInsights(UpdateContributorInsightsRequest updateContributorInsightsRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UpdateGlobalTableResult updateGlobalTable(UpdateGlobalTableRequest updateGlobalTableRequest) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UpdateGlobalTableSettingsResult updateGlobalTableSettings(UpdateGlobalTableSettingsRequest updateGlobalTableSettingsRequest) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -323,6 +428,11 @@ public class PostgresDynamoDB implements AmazonDynamoDB {
 	@Override
 	public UpdateTableResult updateTable(String tableName, ProvisionedThroughput provisionedThroughput) {
 		
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UpdateTableReplicaAutoScalingResult updateTableReplicaAutoScaling(UpdateTableReplicaAutoScalingRequest updateTableReplicaAutoScalingRequest) {
 		throw new UnsupportedOperationException();
 	}
 
