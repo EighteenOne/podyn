@@ -71,7 +71,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class DynamoDBTableReplicator {
-
 	public static final String APPLICATION_NAME = "podyn";
 	public static final String LEASE_TABLE_PREFIX = "podyn_migration_";
 
@@ -213,23 +212,29 @@ public class DynamoDBTableReplicator {
 		return tableSchema;
 	}
 
-	public Future<Long> startReplicatingData(final int maxScanRate) {
-		return executor.submit(new Callable<Long>() {
-			@Override
-			public Long call() throws Exception {
-				return replicateData(maxScanRate);
-			}
-		});
+	public List<Future<Long>> startReplicatingData(final int maxScanRate, final int numDataWorkers) {
+		List<Future<Long>> futures = new ArrayList<>();
+
+		for(int i = 0; i < numDataWorkers; i++) {
+			final int partition = i;
+			futures.add(executor.submit(new Callable<Long>() {
+				@Override
+				public Long call() throws Exception {
+					return replicateData(maxScanRate, partition, numDataWorkers);
+				}
+			}));
+		}
+		return futures;
 	}
 
-	public long replicateData(int maxScanRate) {
+	public long replicateData(int maxScanRate, int partition, int numDataWorkers) {
 		RateLimiter rateLimiter = RateLimiter.create(maxScanRate);
 
 		Map<String,AttributeValue> lastEvaluatedScanKey = null;
 		long numRowsReplicated = 0;
 
 		while(true) {
-			ScanResult scanResult = scanWithRetries(lastEvaluatedScanKey);
+			ScanResult scanResult = scanWithRetries(lastEvaluatedScanKey, partition, numDataWorkers);
 
 			if (addColumnsEnabled) {
 				for(Map<String,AttributeValue> dynamoItem : scanResult.getItems()) {
@@ -273,13 +278,16 @@ public class DynamoDBTableReplicator {
 		return numRowsReplicated;
 	}
 
-	private ScanResult scanWithRetries(Map<String, AttributeValue> lastEvaluatedScanKey) {
+	private ScanResult scanWithRetries(Map<String, AttributeValue> lastEvaluatedScanKey, int partition, int numDataWorkers) {
 		ScanRequest scanRequest = new ScanRequest().
 				withTableName(this.dynamoTableName).
 				withConsistentRead(true).
 				withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL).
 				withLimit(100).
 				withExclusiveStartKey(lastEvaluatedScanKey);
+		if(numDataWorkers > 1){
+			scanRequest.withTotalSegments(numDataWorkers).withSegment(partition);
+		}
 
 		for (int tryNumber = 1; ; tryNumber++) {
 			try {
