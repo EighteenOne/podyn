@@ -25,12 +25,15 @@ Once you've built the JAR, you can run it as follows.
 usage: podyn
  -c,--changes                    Continuously replicate changes
  -d,--data                       Replicate the current data
+ -dw,--num-data-workers <arg>    Number of workers to use for performing the data operation.
  -h,--help                       Show help
  -lc,--lower-case-column-names   Use lower case column names
  -m,--conversion-mode <arg>      Conversion mode, either columns or jsonb (default: columns)
  -n,--num-connections <arg>      Database connection pool size (default 16)
  -r,--scan-rate <arg>            Maximum reads/sec during scan (default 25)
  -s,--schema                     Replicate the table schema
+ -sl,--scan-limit <arg>          Maximum number of items to retrieve in individual scans to help control throughput
+                                 footprint.
  -t,--table <arg>                DynamoDB table name(s) to replicate
  -u,--postgres-jdbc-url <arg>    PostgreSQL JDBC URL of the destination
  -x,--citus                      Create distributed tables using Citus
