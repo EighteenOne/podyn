@@ -79,6 +79,10 @@ public class DynamoDBReplicator {
 		maxScanRateOption.setRequired(false);
 		options.addOption(maxScanRateOption);
 
+		Option numWorkers = new Option("dw", "num-data-workers", true, "Number of workers to use for performing the data operation.");
+		numWorkers.setRequired(false);
+		options.addOption(numWorkers);
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(120);
@@ -104,6 +108,7 @@ public class DynamoDBReplicator {
 			String postgresURL = cmd.getOptionValue("postgres-jdbc-url");
 			String conversionModeString = cmd.getOptionValue("conversion-mode", ConversionMode.columns.name());
 
+			int dataWorkers = Integer.parseInt(cmd.getOptionValue("num-data-workers", "1"));
 			ConversionMode conversionMode;
 
 			try {
@@ -184,9 +189,9 @@ public class DynamoDBReplicator {
 				List<Future<Long>> futureResults = new ArrayList<Future<Long>>();
 
 				for(DynamoDBTableReplicator replicator : replicators) {
-					log.info("Replicating data for table {}", replicator.dynamoTableName);
-					Future<Long> futureResult = replicator.startReplicatingData(maxScanRate);
-					futureResults.add(futureResult);
+					log.info("Replicating data for table {} for {} workers", replicator.dynamoTableName, dataWorkers);
+					List<Future<Long>> replicatorFutures = replicator.startReplicatingData(maxScanRate, dataWorkers);
+					futureResults.addAll(replicatorFutures);
 				}
 
 				for(Future<Long> futureResult : futureResults) {
@@ -228,7 +233,6 @@ public class DynamoDBReplicator {
 			System.exit(1);
 		} catch (RuntimeException e) {
 			log.error("A RuntimeException occurred.", e);
-			e.printStackTrace();
 			System.exit(2);
 		} catch (Exception e) {
 			log.error("A Exception occurred.", e);

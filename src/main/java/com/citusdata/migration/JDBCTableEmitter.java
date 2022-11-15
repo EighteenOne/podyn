@@ -158,14 +158,16 @@ public class JDBCTableEmitter implements TableEmitter {
 	}
 
 	public synchronized void createTable(TableSchema tableSchema) throws EmissionException {
-		try {
-			Statement statement = currentConnection.createStatement();
+		synchronized (JDBCTableEmitter.class) {
+			try {
+				Statement statement = currentConnection.createStatement();
 
-			for (String ddlCommand : tableSchema.toDDLList()) {
-				statement.execute(ddlCommand);
+				for (String ddlCommand : tableSchema.toDDLList()) {
+					statement.execute(ddlCommand);
+				}
+			} catch (SQLException e) {
+				throw new EmissionException(e);
 			}
-		} catch (SQLException e) {
-			throw new EmissionException(e);
 		}
 	}
 
@@ -182,12 +184,14 @@ public class JDBCTableEmitter implements TableEmitter {
 	}
 
 	public synchronized void createColumn(TableColumn column) {
-		try {
-			String query = column.toAlterTableAddColumn();
-			Statement statement = currentConnection.createStatement();
-			statement.execute(query);
-		} catch (SQLException e) {
-			throw new EmissionException(e);
+		synchronized (JDBCTableEmitter.class) {
+			try {
+				String query = column.toAlterTableAddColumn();
+				Statement statement = currentConnection.createStatement();
+				statement.execute(query);
+			} catch (SQLException e) {
+				throw new EmissionException(e);
+			}
 		}
 	}
 
