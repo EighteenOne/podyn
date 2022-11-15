@@ -15,9 +15,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
@@ -66,14 +63,14 @@ import com.citusdata.migration.datamodel.TableRow;
 import com.citusdata.migration.datamodel.TableRowBatch;
 import com.citusdata.migration.datamodel.TableSchema;
 import com.google.common.util.concurrent.RateLimiter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author marco
  *
  */
+@Slf4j
 public class DynamoDBTableReplicator {
-
-	private static final Log LOG = LogFactory.getLog(DynamoDBTableReplicator.class);
 
 	public static final String APPLICATION_NAME = "podyn";
 	public static final String LEASE_TABLE_PREFIX = "podyn_migration_";
@@ -248,7 +245,7 @@ public class DynamoDBTableReplicator {
 				tableRowBatch.addRow(tableRow);
 			}
 
-			LOG.info(String.format("Replicated %d rows to table %s", tableRowBatch.size(), tableSchema.tableName));
+			log.info("Replicated {} rows to table {}", tableRowBatch.size(), tableSchema.tableName);
 
 			numRowsReplicated += tableRowBatch.size();
 
@@ -399,7 +396,7 @@ public class DynamoDBTableReplicator {
 				try {
 					checkpointer.checkpoint();
 				} catch (KinesisClientLibDependencyException|InvalidStateException|ThrottlingException|ShutdownException e) {
-					LOG.warn(e);
+					log.warn("An error occurred.", e);
 				}
 			}
 		};
@@ -428,26 +425,26 @@ public class DynamoDBTableReplicator {
 				Map<String,AttributeValue> dynamoItem = streamRecord.getNewImage();
 
 				if(dynamoItem == null) {
-					LOG.error(String.format("the stream for table %s does not have new images", dynamoTableName));
+					log.error("the stream for table {} does not have new images", dynamoTableName);
 					System.exit(1);
 				}
 
 				TableRow tableRow = rowFromDynamoRecord(dynamoItem);
 				emitter.upsert(tableRow);
-				LOG.debug(tableRow.toUpsert());
+				log.debug("Upserting value: {}", tableRow.toUpsert());
 				break;
 			case "REMOVE":
 				Map<String,AttributeValue> dynamoKeys = streamRecord.getKeys();
 				PrimaryKeyValue keyValue = primaryKeyValueFromDynamoKeys(dynamoKeys);
 				emitter.delete(keyValue);
-				LOG.debug(keyValue.toDelete());
+				log.debug("Deleting value: {}", keyValue.toDelete());
 				break;
 			}
 
-			LOG.debug(streamRecord);
+			log.debug("{}", streamRecord);
 		}
 
-		LOG.info(String.format("Replicated %d changes to table %s", records.size(), tableSchema.tableName));
+		log.info("Replicated {} changes to table {}", records.size(), tableSchema.tableName);
 	}
 
 	void addNewColumns(Map<String,AttributeValue> item) {
@@ -464,7 +461,7 @@ public class DynamoDBTableReplicator {
 
 			if (column == null) {
 				column = tableSchema.addColumn(columnName, valueType);
-				LOG.info(String.format("Adding new column to table %s: %s", tableSchema.tableName, column));
+				log.info("Adding new column to table {}: {}", tableSchema.tableName, column);
 				emitter.createColumn(column);
 			} else if (column.type != valueType) {
 				columnName = columnName + "_" + valueType;
@@ -472,7 +469,7 @@ public class DynamoDBTableReplicator {
 
 				if (column == null) {
 					column = tableSchema.addColumn(columnName, valueType);
-					LOG.info(String.format("Adding new column to table %s: %s", tableSchema.tableName, column));
+					log.info("Adding new column to table {}: {}", tableSchema.tableName, column);
 					emitter.createColumn(column);
 				}
 			}
