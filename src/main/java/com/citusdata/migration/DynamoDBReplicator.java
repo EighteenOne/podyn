@@ -83,6 +83,10 @@ public class DynamoDBReplicator {
 		numWorkers.setRequired(false);
 		options.addOption(numWorkers);
 
+		Option scanLimit = new Option("sl", "scan-limit", true, "Maximum number of items to retrieve in individual scans to help control throughput footprint.");
+		scanLimit.setRequired(false);
+		options.addOption(scanLimit);
+
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		formatter.setWidth(120);
@@ -108,7 +112,12 @@ public class DynamoDBReplicator {
 			String postgresURL = cmd.getOptionValue("postgres-jdbc-url");
 			String conversionModeString = cmd.getOptionValue("conversion-mode", ConversionMode.columns.name());
 
-			int dataWorkers = Integer.parseInt(cmd.getOptionValue("num-data-workers", "1"));
+			final int dataWorkers = Integer.parseInt(cmd.getOptionValue("num-data-workers", "1"));
+			int scanLimitSetting = Integer.parseInt(cmd.getOptionValue("scan-limit", "100"));
+			if(scanLimitSetting < 50){
+				log.warn("{} provided for scan-limit, 50 is the minimum value allowed.", scanLimitSetting);
+				scanLimitSetting = 50;
+			}
 			ConversionMode conversionMode;
 
 			try {
@@ -189,8 +198,8 @@ public class DynamoDBReplicator {
 				List<Future<Long>> futureResults = new ArrayList<Future<Long>>();
 
 				for(DynamoDBTableReplicator replicator : replicators) {
-					log.info("Replicating data for table {} for {} workers", replicator.dynamoTableName, dataWorkers);
-					List<Future<Long>> replicatorFutures = replicator.startReplicatingData(maxScanRate, dataWorkers);
+					log.info("Replicating data for table {} for {} workers, using {} for the scan limit.", replicator.dynamoTableName, dataWorkers, scanLimitSetting);
+					List<Future<Long>> replicatorFutures = replicator.startReplicatingData(maxScanRate, dataWorkers, scanLimitSetting);
 					futureResults.addAll(replicatorFutures);
 				}
 
