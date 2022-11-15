@@ -212,7 +212,7 @@ public class DynamoDBTableReplicator {
 		return tableSchema;
 	}
 
-	public List<Future<Long>> startReplicatingData(final int maxScanRate, final int numDataWorkers) {
+	public List<Future<Long>> startReplicatingData(final int maxScanRate, final int numDataWorkers, int scanLimitSetting) {
 		List<Future<Long>> futures = new ArrayList<>();
 
 		for(int i = 0; i < numDataWorkers; i++) {
@@ -220,21 +220,21 @@ public class DynamoDBTableReplicator {
 			futures.add(executor.submit(new Callable<Long>() {
 				@Override
 				public Long call() throws Exception {
-					return replicateData(maxScanRate, partition, numDataWorkers);
+					return replicateData(maxScanRate, partition, numDataWorkers, scanLimitSetting);
 				}
 			}));
 		}
 		return futures;
 	}
 
-	public long replicateData(int maxScanRate, int partition, int numDataWorkers) {
+	public long replicateData(int maxScanRate, int partition, int numDataWorkers, int scanLimitSetting) {
 		RateLimiter rateLimiter = RateLimiter.create(maxScanRate);
 
 		Map<String,AttributeValue> lastEvaluatedScanKey = null;
 		long numRowsReplicated = 0;
 
 		while(true) {
-			ScanResult scanResult = scanWithRetries(lastEvaluatedScanKey, partition, numDataWorkers);
+			ScanResult scanResult = scanWithRetries(lastEvaluatedScanKey, partition, numDataWorkers, scanLimitSetting);
 
 			if (addColumnsEnabled) {
 				for(Map<String,AttributeValue> dynamoItem : scanResult.getItems()) {
@@ -278,12 +278,12 @@ public class DynamoDBTableReplicator {
 		return numRowsReplicated;
 	}
 
-	private ScanResult scanWithRetries(Map<String, AttributeValue> lastEvaluatedScanKey, int partition, int numDataWorkers) {
+	private ScanResult scanWithRetries(Map<String, AttributeValue> lastEvaluatedScanKey, int partition, int numDataWorkers, int scanLimitSetting) {
 		ScanRequest scanRequest = new ScanRequest().
 				withTableName(this.dynamoTableName).
 				withConsistentRead(true).
 				withReturnConsumedCapacity(ReturnConsumedCapacity.TOTAL).
-				withLimit(100).
+				withLimit(scanLimitSetting).
 				withExclusiveStartKey(lastEvaluatedScanKey);
 		if(numDataWorkers > 1){
 			scanRequest.withTotalSegments(numDataWorkers).withSegment(partition);
