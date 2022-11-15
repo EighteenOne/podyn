@@ -3,26 +3,6 @@
  */
 package com.citusdata.migration;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -33,15 +13,25 @@ import com.amazonaws.services.dynamodbv2.model.ListTablesResult;
 import com.citusdata.migration.datamodel.NonExistingTableException;
 import com.citusdata.migration.datamodel.TableEmitter;
 import com.citusdata.migration.datamodel.TableExistsException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.cli.*;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author marco
  *
  */
+@Slf4j
 public class DynamoDBReplicator {
-
-	private static final Log LOG = LogFactory.getLog(DynamoDBReplicator.class);
-
 	public static void main(String[] args) throws SQLException, IOException {
 		Options options = new Options();
 
@@ -148,7 +138,7 @@ public class DynamoDBReplicator {
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				public void run() {
-					LOG.info("Closing database connections");
+					log.info("Closing database connections");
 					emitter.close();
 				}
 			});
@@ -184,7 +174,7 @@ public class DynamoDBReplicator {
 
 			if (replicateSchema) {
 				for(DynamoDBTableReplicator replicator : replicators) {
-					LOG.info(String.format("Constructing table schema for table %s", replicator.dynamoTableName));
+					log.info("Constructing table schema for table {}", replicator.dynamoTableName);
 
 					replicator.replicateSchema();
 				}
@@ -194,7 +184,7 @@ public class DynamoDBReplicator {
 				List<Future<Long>> futureResults = new ArrayList<Future<Long>>();
 
 				for(DynamoDBTableReplicator replicator : replicators) {
-					LOG.info(String.format("Replicating data for table %s", replicator.dynamoTableName));
+					log.info("Replicating data for table {}", replicator.dynamoTableName);
 					Future<Long> futureResult = replicator.startReplicatingData(maxScanRate);
 					futureResults.add(futureResult);
 				}
@@ -206,7 +196,7 @@ public class DynamoDBReplicator {
 
 			if (replicateChanges) {
 				for(DynamoDBTableReplicator replicator : replicators) {
-					LOG.info(String.format("Replicating changes for table %s", replicator.dynamoTableName));
+					log.info("Replicating changes for table {}", replicator.dynamoTableName);
 					replicator.startReplicatingChanges();
 				}
 			} else {
@@ -214,33 +204,34 @@ public class DynamoDBReplicator {
 			}
 
 		} catch (ParseException e) {
-			LOG.error(e.getMessage());
+			log.error(e.getMessage());
 			formatter.printHelp("podyn", options);
 			System.exit(3);
 		} catch (TableExistsException|NonExistingTableException e) {
-			LOG.error(e.getMessage());
+			log.error(e.getMessage());
 			System.exit(1);
 		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
 
 			if (cause.getCause() != null) {
-				LOG.error(cause.getCause().getMessage());
+				log.error(cause.getCause().getMessage());
 			} else {
-				LOG.error(cause.getMessage());
+				log.error(cause.getMessage());
 			}
 			System.exit(1);
 		} catch (EmissionException e) {
 			if (e.getCause() != null) {
-				LOG.error(e.getCause().getMessage());
+				log.error(e.getCause().getMessage());
 			} else {
-				LOG.error(e.getMessage());
+				log.error(e.getMessage());
 			}
 			System.exit(1);
 		} catch (RuntimeException e) {
+			log.error("A RuntimeException occurred.", e);
 			e.printStackTrace();
 			System.exit(2);
 		} catch (Exception e) {
-			LOG.error(e);
+			log.error("A Exception occurred.", e);
 			System.exit(1);
 		}
 	}
