@@ -331,7 +331,7 @@ public class DynamoDBTableReplicator {
 		}
 
 		AmazonDynamoDBStreamsAdapterClient adapterClient = new AmazonDynamoDBStreamsAdapterClient(streamsClient);
-		AmazonCloudWatch cloudWatchClient = AmazonCloudWatchClientBuilder.standard().build();
+// 		AmazonCloudWatch cloudWatchClient = AmazonCloudWatchClientBuilder.standard().build();
 
 		String workerId = generateWorkerId();
 
@@ -349,7 +349,7 @@ public class DynamoDBTableReplicator {
 				recordProcessorFactory(recordProcessorFactory).
 				config(workerConfig).
 				kinesisClient(adapterClient).
-				cloudWatchClient(cloudWatchClient).
+// 				cloudWatchClient(cloudWatchClient).
 				dynamoDBClient(dynamoDBClient).
 				execService(executor).
 				build();
