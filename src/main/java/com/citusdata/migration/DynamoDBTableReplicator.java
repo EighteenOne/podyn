@@ -294,11 +294,11 @@ public class DynamoDBTableReplicator {
 				ScanResult scanResult = dynamoDBClient.scan(scanRequest);
 				return scanResult;
 			} catch (ProvisionedThroughputExceededException e) {
-				if (tryNumber == 3) {
+				if (tryNumber == 6) {
 					throw e;
 				}
 			} catch (InternalServerErrorException e) {
-				if (tryNumber == 3) {
+				if (tryNumber == 6) {
 					throw e;
 				}
 			}
@@ -565,7 +565,9 @@ public class DynamoDBTableReplicator {
 			AttributeValue typedValue = entry.getValue();
 			TableColumnValue columnValue = columnValueFromDynamoValue(typedValue);
 
-			if (columnValue.type == column.type) {
+			if( columnValue == null ){
+				row.setValue(columnName, null);
+			}else if (columnValue.type == column.type) {
 				row.setValue(columnName, columnValue);
 			} else {
 
