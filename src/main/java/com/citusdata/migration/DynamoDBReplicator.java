@@ -18,6 +18,7 @@ import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -166,7 +167,7 @@ public class DynamoDBReplicator {
 
 			List<String> dynamoTableNames = new ArrayList<>();
 			List<String> postgresTableNames = new ArrayList<>();
-			HashMap<String, String> tableLookup = new HashMap<String, String>();
+			HashMap<String, String> tableLookup = new HashMap<>();
 
 			if (dynamoTableNamesString != null) {
 				dynamoTableNames = Arrays.asList(dynamoTableNamesString.split(","));
