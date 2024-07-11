@@ -43,6 +43,10 @@ public class DynamoDBReplicator {
 		dynamoDBTableOption.setRequired(false);
 		options.addOption(dynamoDBTableOption);
 
+        Option postgresTableOption = new Option("pt", "postgres-table", true, "Postgres table name(s) to target");
+		postgresTableOption.setRequired(false);
+		options.addOption(postgresTableOption);
+
 		Option postgresURLOption = new Option("u", "postgres-jdbc-url", true, "PostgreSQL JDBC URL of the destination");
 		postgresURLOption.setRequired(false);
 		options.addOption(postgresURLOption);
@@ -108,7 +112,8 @@ public class DynamoDBReplicator {
 			boolean useLowerCaseColumnNames = cmd.hasOption("lower-case-column-names");
 			int maxScanRate = Integer.parseInt(cmd.getOptionValue("scan-rate", "25"));
 			int dbConnectionCount = Integer.parseInt(cmd.getOptionValue("num-connections", "16"));
-			String tableNamesString = cmd.getOptionValue("table");
+            String dynamoTableNamesString = cmd.getOptionValue("table");
+			String postgresTableNamesString = cmd.getOptionValue("postgres-table");
 			String postgresURL = cmd.getOptionValue("postgres-jdbc-url");
 			String conversionModeString = cmd.getOptionValue("conversion-mode", ConversionMode.columns.name());
 
@@ -159,24 +164,41 @@ public class DynamoDBReplicator {
 
 			List<DynamoDBTableReplicator> replicators = new ArrayList<>();
 
-			List<String> tableNames = new ArrayList<>();
+			List<String> dynamoTableNames = new ArrayList<>();
+			List<String> postgresTableNames = new ArrayList<>();
+			HashMap<String, String> tableLookup = new HashMap<>();
 
-			if (tableNamesString != null) {
-				tableNames = Arrays.asList(tableNamesString.split(","));
+			if (dynamoTableNamesString != null) {
+				dynamoTableNames = Arrays.asList(dynamoTableNamesString.split(","));
+				if (postgresTableNamesString != null) {
+					postgresTableNames = Arrays.asList(postgresTableNamesString.split(","));
+					if (postgresTableNames.size() != dynamoTableNames.size()) {
+						throw new ParseException("Dynamo and Postgres table lists must be the same size");
+					}
+				}
+			    for(int i = 0; i < dynamoTableNames.size(); i++) {
+					tableLookup.put(dynamoTableNames.get(i), postgresTableNames.get(i));
+				}
 			} else {
 				ListTablesResult listTablesResult = dynamoDBClient.listTables();
 				for(String tableName : listTablesResult.getTableNames()) {
 					if (!tableName.startsWith(DynamoDBTableReplicator.LEASE_TABLE_PREFIX)) {
-						tableNames.add(tableName);
+						dynamoTableNames.add(tableName);
 					}
 				}
 			}
 
 			ExecutorService executor = Executors.newCachedThreadPool();
 
-			for(String tableName : tableNames) {
+			for(String dynamoTableName : dynamoTableNames) {
+				String postgresTableName = tableLookup.get(dynamoTableName);
+				// If we don't have a postgres table name,
+				// use the dynamo table name
+				if (postgresTableName.isEmpty()) {
+					postgresTableName = dynamoTableName;
+				}
 				DynamoDBTableReplicator replicator = new DynamoDBTableReplicator(
-						dynamoDBClient, streamsClient, credentialsProvider, executor, emitter, tableName);
+						dynamoDBClient, streamsClient, credentialsProvider, executor, emitter, dynamoTableName, postgresTableName);
 
 				replicator.setAddColumnEnabled(true);
 				replicator.setUseCitus(useCitus);
@@ -188,7 +210,7 @@ public class DynamoDBReplicator {
 
 			if (replicateSchema) {
 				for(DynamoDBTableReplicator replicator : replicators) {
-					log.info("Constructing table schema for table {}", replicator.dynamoTableName);
+					log.info(String.format("Constructing table schema for dynamo table %s into postgres table %s", replicator.dynamoTableName, replicator.postgresTableName));
 
 					replicator.replicateSchema();
 				}

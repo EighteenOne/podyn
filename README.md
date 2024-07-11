@@ -34,6 +34,8 @@ usage: podyn
  -s,--schema                     Replicate the table schema
  -sl,--scan-limit <arg>          Maximum number of items to retrieve in individual scans to help control throughput
                                  footprint.
+ -pt,--postgres-table <arg>      Postgres table name(s) to target
+                                 
  -t,--table <arg>                DynamoDB table name(s) to replicate
  -u,--postgres-jdbc-url <arg>    PostgreSQL JDBC URL of the destination
  -x,--citus                      Create distributed tables using Citus
