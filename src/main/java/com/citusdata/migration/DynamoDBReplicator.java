@@ -174,7 +174,9 @@ public class DynamoDBReplicator {
 				if (postgresTableNamesString != null) {
 					postgresTableNames = Arrays.asList(postgresTableNamesString.split(","));
 					if (postgresTableNames.size() != dynamoTableNames.size()) {
-						throw new ParseException("Dynamo and Postgres table lists must be the same size");
+						throw new ParseException("Dynamo and Postgres table lists must be the same size."
+						+ "pt str: "+ postgresTableNamesString + " size " + postgresTableNames.size() + "list:" + postgresTableNames +";"
+						+ "dynamo str:" + dynamoTableNamesString + " size " + dynamoTableNames.size() "list:" + dynamoTableNames);
 					}
 				}
 			    for(int i = 0; i < dynamoTableNames.size(); i++) {
