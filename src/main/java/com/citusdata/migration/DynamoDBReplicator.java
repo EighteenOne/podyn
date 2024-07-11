@@ -166,7 +166,7 @@ public class DynamoDBReplicator {
 
 			List<String> dynamoTableNames = new ArrayList<>();
 			List<String> postgresTableNames = new ArrayList<>();
-			HashMap<String, String> tableLookup = new HashMap<>();
+			HashMap<String, String> tableLookup = new HashMap<String, String>();
 
 			if (dynamoTableNamesString != null) {
 				dynamoTableNames = Arrays.asList(dynamoTableNamesString.split(","));
