@@ -567,13 +567,13 @@ public class DynamoDBTableReplicator {
 		try
 		{
 			Integer res = Integer.parseInt((String)columnValue.datum);
-			return columnValue.datum;
+			return res;
 		}
 		catch(Exception ex)
 		{
 			try {
 				Double res = Double.parseDouble((String)columnValue.datum);
-				return columnValue.datum;
+				return res;
 			}
 			catch (Exception exc) {
 				return null;
