@@ -544,12 +544,41 @@ public class DynamoDBTableReplicator {
 				row.setValue(columnName, columnValue);
 			}
 
+			if (columnValue != null) {
+            	if (columnValue.type.equals(TableColumnType.numeric)) {
+            		item.with(keyName, parseNumeric(columnValue));
+				} else {
+					item.with(keyName, columnValue.datum);
+				}
+            } else {
+                item.with(keyName, null);
+            }
+
+
 			item.with(keyName, columnValue.datum);
 		}
 
 		row.setValue("data", item.toJSON());
 
 		return row;
+	}
+
+	public Object parseNumeric(TableColumnValue columnValue) {
+		try
+		{
+			Integer res = Integer.parseInt((String)columnValue.datum);
+			return columnValue.datum;
+		}
+		catch(Exception ex)
+		{
+			try {
+				Double res = Double.parseDouble((String)columnValue.datum);
+				return columnValue.datum;
+			}
+			catch (Exception exc) {
+				return null;
+			}
+		}
 	}
 
 	public TableRow rowWithColumnsFromDynamoRecord(Map<String,AttributeValue> dynamoItem) {
