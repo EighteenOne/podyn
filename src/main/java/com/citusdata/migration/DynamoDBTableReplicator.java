@@ -108,7 +108,7 @@ public class DynamoDBTableReplicator {
 		this.addColumnsEnabled = true;
 		this.useCitus = false;
 		this.useLowerCaseColumnNames = false;
-		this.tableSchema = emitter.fetchSchema(this.dynamoTableName);
+		this.tableSchema = emitter.fetchSchema(this.postgresTableName);
 	}
 
 	public void setUseCitus(boolean useCitus) {
