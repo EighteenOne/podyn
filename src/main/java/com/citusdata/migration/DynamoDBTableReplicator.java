@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBStreams;
 import com.amazonaws.services.dynamodbv2.document.Item;
@@ -332,6 +334,7 @@ public class DynamoDBTableReplicator {
 		}
 
 		AmazonDynamoDBStreamsAdapterClient adapterClient = new AmazonDynamoDBStreamsAdapterClient(streamsClient);
+// 		AmazonCloudWatch cloudWatchClient = AmazonCloudWatchClientBuilder.standard().build();
 
 		String workerId = generateWorkerId();
 
@@ -349,6 +352,7 @@ public class DynamoDBTableReplicator {
 				recordProcessorFactory(recordProcessorFactory).
 				config(workerConfig).
 				kinesisClient(adapterClient).
+// 				cloudWatchClient(cloudWatchClient).
 				dynamoDBClient(dynamoDBClient).
 				execService(executor).
 				build();
@@ -550,8 +554,6 @@ public class DynamoDBTableReplicator {
                 item.with(keyName, null);
             }
 
-
-			item.with(keyName, columnValue.datum);
 		}
 
 		row.setValue("data", item.toJSON());
