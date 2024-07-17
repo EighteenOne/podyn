@@ -178,9 +178,9 @@ public class DynamoDBReplicator {
 						+ "pt str: "+ postgresTableNamesString + " size " + postgresTableNames.size() + "list:" + postgresTableNames + ";"
 						+ "dynamo str:" + dynamoTableNamesString + " size " + dynamoTableNames.size() + "list:" + dynamoTableNames);
 					}
-				}
-			    for(int i = 0; i < dynamoTableNames.size(); i++) {
-					tableLookup.put(dynamoTableNames.get(i), postgresTableNames.get(i));
+                    for(int i = 0; i < dynamoTableNames.size(); i++) {
+                        tableLookup.put(dynamoTableNames.get(i), postgresTableNames.get(i));
+                    }
 				}
 			} else {
 				ListTablesResult listTablesResult = dynamoDBClient.listTables();
