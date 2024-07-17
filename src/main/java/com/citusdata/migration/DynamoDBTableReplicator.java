@@ -342,6 +342,7 @@ public class DynamoDBTableReplicator {
 				withCallProcessRecordsEvenForEmptyRecordList(false).
 				withCleanupLeasesUponShardCompletion(false).
 				withFailoverTimeMillis(20000).
+				withMetricsLevel("NONE").
 				withTableName(LEASE_TABLE_PREFIX + dynamoTableName).
 				withInitialPositionInStream(InitialPositionInStream.TRIM_HORIZON);
 
