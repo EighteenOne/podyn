@@ -4,11 +4,11 @@
         <Console name="STDOUT" target="SYSTEM_OUT">
             <PatternLayout
                     pattern="%d %-20t %-5p %30.30c - %m%n%ex" />
-
         </Console>
     </Appenders>
     <Loggers>
         <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="FATAL"/>
+        <logger name="com.amazonaws.services.kinesis.clientlibrary" level="WARN"/>
         <Root level="INFO">
             <AppenderRef ref="STDOUT" />
         </Root>
