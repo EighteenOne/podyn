@@ -8,6 +8,7 @@
     </Appenders>
     <Loggers>
         <Logger name="com.amazonaws.auth.profile.internal.BasicProfileConfigLoader" level="FATAL"/>
+        <logger name="com.amazonaws.services.kinesis" level="WARN"/>
         <logger name="com.amazonaws.services.kinesis.clientlibrary" level="WARN"/>
         <Root level="INFO">
             <AppenderRef ref="STDOUT" />
