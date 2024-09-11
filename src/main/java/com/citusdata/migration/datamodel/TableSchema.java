@@ -47,7 +47,7 @@ public class TableSchema {
 
 	public TableColumn addColumn(String columnName, TableColumnType type) {
 		if (columnExists(columnName)) {
-		    log.info("column \"%s\" already exists", columnName);
+		    log.info("column {} already exists (input TableColumnType in func param {})", columnName, type);
 // 			throw new ColumnExistError("column \"%s\" already exists", columnName);
 		}
 
