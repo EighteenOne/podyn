@@ -8,11 +8,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author marco
  *
  */
+ @Slf4j
 public class TableSchema {
 
 	public String schemaName;
@@ -45,7 +47,8 @@ public class TableSchema {
 
 	public TableColumn addColumn(String columnName, TableColumnType type) {
 		if (columnExists(columnName)) {
-			throw new ColumnExistError("column \"%s\" already exists", columnName);
+		    log.info("column \"%s\" already exists", columnName);
+// 			throw new ColumnExistError("column \"%s\" already exists", columnName);
 		}
 
 		TableColumn column = new TableColumn(this, columnName, type);
